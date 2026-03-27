@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Project Xhabbit is a futuristic offline habit tracker with streaks, animated progress rings, insights, and daily motivation."
+    >
+    <title>Project Xhabbit</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <canvas class="particle-canvas" id="particle-canvas" aria-hidden="true"></canvas>
+
+    <main class="app-shell">
+      <section class="hero panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Personal Habit Tracker</p>
+          <h1>Project Xhabbit</h1>
+          <h2>Hello Piyush 👋</h2>
+          <p class="tagline">Small actions today create the future.</p>
+        </div>
+        <div class="hero-orb" aria-hidden="true">
+          <div class="orb-core"></div>
+          <div class="orb-ring orb-ring-a"></div>
+          <div class="orb-ring orb-ring-b"></div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <section class="panel progress-panel">
+          <div class="section-heading">
+            <span></span>
+            <h3>Today&apos;s Progress</h3>
+          </div>
+          <div class="progress-layout">
+            <div class="today-ring-wrap">
+              <svg class="today-ring" viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                  <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8"></stop>
+                    <stop offset="50%" stop-color="#8b5cf6"></stop>
+                    <stop offset="100%" stop-color="#f59e0b"></stop>
+                  </linearGradient>
+                </defs>
+                <circle class="ring-track" cx="60" cy="60" r="46"></circle>
+                <circle class="ring-fill" id="today-ring-fill" cx="60" cy="60" r="46"></circle>
+              </svg>
+              <div class="today-ring-center">
+                <span class="muted">Today</span>
+                <strong id="progress-percent">0%</strong>
+              </div>
+            </div>
+
+            <div class="summary-cards">
+              <article class="summary-card">
+                <span class="summary-icon">🏆</span>
+                <div>
+                  <p>Best Streak</p>
+                  <strong id="best-streak">0 days</strong>
+                </div>
+              </article>
+              <article class="summary-card">
+                <span class="summary-icon">⚡</span>
+                <div>
+                  <p>Current Streak</p>
+                  <strong id="current-streak">0 days</strong>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel habits-panel">
+          <div class="section-heading section-heading-space">
+            <div class="heading-group">
+              <span></span>
+              <h3>My Habits</h3>
+            </div>
+            <button class="ghost-button" id="open-modal-button" type="button">+ Add Habit</button>
+          </div>
+
+          <div class="habit-grid" id="habit-grid"></div>
+        </section>
+
+        <section class="panel insights-panel">
+          <div class="section-heading">
+            <span></span>
+            <h3>Insights</h3>
+          </div>
+
+          <div class="insight-grid">
+            <article class="insight-card">
+              <div class="insight-header">
+                <h4>Weekly Progress</h4>
+                <p>Daily completion rate</p>
+              </div>
+              <canvas id="weekly-chart" aria-label="Weekly progress bar chart"></canvas>
+            </article>
+
+            <article class="insight-card">
+              <div class="insight-header">
+                <h4>Habit Consistency</h4>
+                <p>Last 10 tracked days</p>
+              </div>
+              <div class="consistency-list" id="consistency-list"></div>
+            </article>
+
+            <article class="insight-card">
+              <div class="insight-header">
+                <h4>Monthly Trend</h4>
+                <p>Last 30 days</p>
+              </div>
+              <canvas id="monthly-chart" aria-label="Monthly habit trend line chart"></canvas>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel heatmap-panel">
+          <div class="section-heading">
+            <span></span>
+            <h3>Consistency Heatmap</h3>
+          </div>
+          <div class="heatmap-wrap">
+            <div class="heatmap-weekdays" aria-hidden="true">
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span>Thu</span>
+              <span>Fri</span>
+              <span>Sat</span>
+              <span>Sun</span>
+            </div>
+            <div id="heatmap" class="heatmap-grid" aria-label="Habit consistency heatmap"></div>
+          </div>
+        </section>
+
+        <section class="panel motivation-panel">
+          <div class="quote-mark">“</div>
+          <blockquote id="daily-quote"></blockquote>
+        </section>
+      </section>
+
+      <footer class="motivation-panel">
+        <button id="exportDataBtn" class="ghost-button" type="button">Export Backup</button>
+        <p class="tagline">Made with Curiosity and Care by Piyush Sahoo © 2026.</p>
+      </footer>
+    </main>
+
+    <div class="modal-backdrop hidden" id="habit-modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="habit-modal-title">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">New Habit</p>
+            <h3 id="habit-modal-title">Add Habit</h3>
+          </div>
+          <button class="icon-button" id="close-modal-button" type="button" aria-label="Close modal">✕</button>
+        </div>
+
+        <form id="habit-form" class="habit-form">
+          <label>
+            Habit name
+            <input id="habit-name" name="habitName" type="text" maxlength="24" placeholder="Deep Work" required>
+          </label>
+
+          <label>
+            Icon
+            <select id="habit-icon" name="habitIcon">
+              <option value="💻">💻 Coding</option>
+              <option value="📚">📚 Reading</option>
+              <option value="🏃">🏃 Exercise</option>
+              <option value="🧘">🧘 Meditation</option>
+              <option value="🎯">🎯 Focus</option>
+              <option value="🌱">🌱 Growth</option>
+              <option value="🎨">🎨 Creativity</option>
+              <option value="💧">💧 Hydration</option>
+            </select>
+          </label>
+
+          <label>
+            Difficulty
+            <div class="difficulty-group">
+              <label class="difficulty-chip">
+                <input type="radio" name="habitDifficulty" value="easy" checked>
+                <span>Easy</span>
+              </label>
+              <label class="difficulty-chip">
+                <input type="radio" name="habitDifficulty" value="medium">
+                <span>Medium</span>
+              </label>
+              <label class="difficulty-chip">
+                <input type="radio" name="habitDifficulty" value="hard">
+                <span>Hard</span>
+              </label>
+            </div>
+          </label>
+
+          <button class="primary-button" type="submit">Create Habit</button>
+        </form>
+      </div>
+    </div>
+
+    <template id="habit-card-template">
+      <article class="habit-card">
+        <div class="habit-head">
+          <span class="habit-difficulty-badge"></span>
+          <button class="delete-button" type="button" aria-label="Delete habit">×</button>
+        </div>
+        <div class="habit-visual">
+          <svg class="habit-ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="habit-track" cx="60" cy="60" r="44"></circle>
+            <circle class="habit-ring" cx="60" cy="60" r="44"></circle>
+          </svg>
+          <div class="habit-icon"></div>
+          <div class="celebration-burst"></div>
+        </div>
+        <div class="habit-body">
+          <h4 class="habit-title"></h4>
+          <p class="habit-streak-line"></p>
+        </div>
+        <button class="primary-button habit-action" type="button">Mark Done</button>
+      </article>
+    </template>
+
+    <script src="./assets/vendor/chart.umd.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
