@@ -54,6 +54,7 @@ syncGlobalStreakForToday();
 setupModal();
 setupExport();
 setupParticles();
+registerServiceWorker();
 renderApp();
 
 function createDefaultHabit(name, icon, difficulty) {
@@ -522,6 +523,16 @@ function setupModal() {
 
 function setupExport() {
   els.exportDataBtn?.addEventListener("click", exportBackup);
+}
+
+function registerServiceWorker() {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js").catch((error) => {
+        console.warn("Service worker registration failed:", error);
+      });
+    });
+  }
 }
 
 function exportBackup() {
